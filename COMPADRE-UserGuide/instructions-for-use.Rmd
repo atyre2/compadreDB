@@ -8,6 +8,9 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 pRoot <- rprojroot::find_rstudio_root_file
+library(dplyr)
+library(purrr)
+library(tidyr)
 
 ```
 
@@ -20,7 +23,7 @@ load(pRoot("data","COMPADRE_v.3.2.1.RData"))
 The first thing I want to do is find out how many matrices there are for a particular species. 
 
 ```{r}
-library(dplyr)
+
 compadre$metadata %>% filter(Genus == "Astragalus") %>% group_by(MatrixStartYear) %>% summarize(nMatrices = n()) %>% print(n = 1000)
 ```
 
@@ -67,3 +70,28 @@ tempClasses[[1]]
 tempClasses[[16]]
 ```
 
+The next question I'm wondering about is the proportion of all plant matrices that have a dormant class. That is, one or more classes that equal `dorm` in `MatrixClassOrganized`.
+
+```{r}
+dorm <- function(x){
+  # x is a list with a data.frame having three columns
+  # I want to return true if one or more rows of MatrixClassOrganized is "dorm"
+  sum(x$MatrixClassOrganized == "dorm") > 0
+}
+tempMetadata <- compadre$metadata
+tempMetadata %>% mutate(hasDorm= map_lgl(compadre$matrixClass,dorm)) %>% count(GrowthType, hasDorm) %>% 
+    spread(hasDorm, n, fill = 0)
+```
+
+So quite a few herbaceous perennial matrices have dormancy. But how many species? Is there a field that uniquely identifies a species? 
+
+```{r}
+tbl_df(compadre$metadata) %>% mutate(hasDorm= map_lgl(compadre$matrixClass, dorm)) %>% 
+  group_by(SpeciesAccepted) %>%
+  summarize(GrowthType = first(GrowthType),
+            hasDorm = sum(hasDorm) > 0) %>%
+  count(GrowthType, hasDorm) %>% 
+  spread(hasDorm, n, fill = 0)
+```
+
+  So that's more interesting! about 10% of herbaceous perennial species have evidence of dormancy. The proportion of species with dormancy is much lower in other groups. 
