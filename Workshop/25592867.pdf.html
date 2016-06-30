@@ -1,0 +1,159 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- VERSION = $Id$ $Rev: 242115 $ $Date: 2014-11-10 10:38:53 -0800 (Mon, 10 Nov 2014) $ -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+	    <title>Log in</title>
+	    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	    <style type="text/css" media="screen">@import 'css/cas.css'/**/;</style>
+	    <!--[if gte IE 6]><style type="text/css" media="screen">@import 'css/ie_cas.css';</style><![endif]-->
+	    
+	        <link rel="stylesheet" type="text/css" href="https://secure.library.unl.edu:443/screens/styles-rev2b.css"/>
+	    
+	    
+	        <link rel="stylesheet" type="text/css" href="https://secure.library.unl.edu:443/apps/CAS/resources/login.css"/>
+	    
+	    <script type="text/javascript" src="js/common_rosters.js"></script>
+	    
+	</head>
+	<body id="cas" onload="init();">
+
+
+	
+	  	<!-- override casform.css styles -->
+<style>
+input {font-family:Arial,sans-serif;}
+form {margin:0;}
+#login fieldset {padding:10px;}
+#displayContent div {padding:0;}
+.pin label {margin-top:30px;}
+.required {background:#fff;}
+input.btn-submit {margin:5px;}
+#accessibleForm {border:0;}
+#cas #accessibleForm fieldset input { border:1px solid #999999;}
+</style>
+
+<div class="pageContentInner">
+
+<h1 class="pageHeader">My Library Login</h1>
+
+<div class="form1Part formLogin" id="accessibleForm">
+
+	
+
+
+<div id="displayContent">
+
+<form id="fm1" class="fm-v clearfix" method="post" action="/iii/cas/login;jsessionid=A1D7004DC9529C695FD526278724BB50?service=https%3A%2F%2Fsecure.library.unl.edu%3A443%2Fpatroninfo%2F0%2Fredirect%3D%2Fwamvalidate%3Furl%3Dhttp%253A%252F%252F0-www.jstor.org.library.unl.edu%253A80%252Fstable%252Fpdf%252F25592867.pdfIIITICKET&amp;scope=0">
+
+	<!-- Message from client webapp to be displayed on the CAS login screen -->
+  	<div id="clientmessage">
+	<!--display any errors-->
+	
+		
+  	</div> <!-- end clientmessage -->
+
+	<!--display ldap if avail-->
+	
+	<!--display login form-->
+	<div id="login">
+	  <fieldset>
+	    <legend>Login Form</legend>
+	      <!-- Congratulations on bringing the Login Application online!  The default authentication handler authenticates where usernames equal passwords: go ahead, try it out.   -->
+	      <!--<h2>Enter your credentials</h2> -->
+	      
+	        <div class="name">
+	          <label for="name">Your Last Name:</label>
+	          
+	          <input id="name" name="name" class="required" tabindex="3" accesskey="n" type="text" value="" size="20" maxlength="40"/>
+	        </div><!-- end name -->
+	      
+	      
+		      <div class="code">
+		        <label for="code">UNL ID (without issue number) or Community User number </label>
+		        
+		        
+		        
+		        	
+		        	
+		        		<input id="code" name="code" class="required" tabindex="4" accesskey="b" type="text" value="" size="20" maxlength="40"/>
+		        	
+		        
+		      </div> <!-- end code -->
+		  
+	      
+	      <!--display pin if required-->
+	      
+	      	
+	      		
+    			
+        			<div class="pin">
+		          		<label for="pin">Enter your password in the box below</label>
+		          		
+		          		<input id="pin" name="pin" class="required" tabindex="6" accesskey="p" type="password" value="" size="20" maxlength="40" autocomplete="off"/>
+		        	</div> <!-- end pin -->
+    			
+	        
+	      
+	  	  
+			  <div id="pinreset">
+				  <a href="https://library.unl.edu:443/pinreset">forgot your Library Password?</a>
+			  </div>
+		  
+		  <!-- Spring Web Flow requirements -->
+	      <input type="hidden" name="lt" value="_c535A0D61-D761-AAB9-2770-4AC67DCF0B71_k8B70C48D-A9FE-842C-49A6-DB6CA9F9A707" />
+	      <input type="hidden" name="_eventId" value="submit" />
+	  </fieldset>
+	</div>  <!-- end login -->
+    <div class="submit">
+    	
+      		
+      		
+      			<input class="btn-submit" accesskey="l" value="LOGIN" tabindex="9" type="submit" />
+      		
+	    
+  	</div>
+</form>
+</div> <!-- end displayContent -->
+<!-- VERSION = $Id$ $Rev: 23490 $ $Date: 2008-06-20 11:23:16 -0700 (Fri, 20 Jun 2008) $ -->
+
+
+	
+	  	</div> <!-- end #accessibleForm div -->
+
+<div class="clear"></div>
+
+<div style="margin:10px 30px;">
+<font size=4>The first time you login to My Library you must establish a password.  Please do not use upper case letters in your password.  <br>
+To set a password, enter your last name, and NUID number, and click login (leave the password field blank).  <br>
+If you already have a password,  you will get an error message.<br>
+   If that happens click <a href=http://library.unl.edu/pinreset>here </a>  to reset your password.  Check your e-mail for additional instructions.  
+<br><br>For more information on passwords Click <a href=http://library.unl.edu/screens/pinhelp.html>here. </a></p><p>
+</div>
+
+
+	
+
+</body>
+</html>
+
+
+

@@ -9,6 +9,7 @@
 .Rdata
 .Rproj.user/
 data/*
+workshop/*.pdf
 
 
 # The Mage Rcheck files

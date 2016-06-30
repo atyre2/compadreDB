@@ -1,0 +1,151 @@
+---
+title: "Effect of declining fecundity on elasticity pattern"
+author: "Drew Tyre"
+date: "June 19, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pRoot <- rprojroot::find_rstudio_root_file
+library(dplyr)
+library(purrr)
+library(tidyr)
+library(ggplot2)
+funs <- list.files("functions", "*.R")
+for (i in seq_along(funs)){
+  source(pRoot("functions",funs[i]))
+}
+```
+
+I'm curious about how the elasticity attributed to reproduction changes as fertility decreases. So I'll pull out a matrix at random, multiply the fertility component by a scalar constant between 0 and 2, calculate the elasticity and see what happens.
+
+First load the .RData object. I have it stashed in a subdirectory "data".
+
+```{r}
+load(pRoot("data","COMPADRE_v.3.2.1.RData"))
+```
+
+Now I want the list of mean matrices that are divided, and I'll choose a random sample from that.
+
+```{r}
+ssdb <- subsetDB2(MatrixComposite == "Mean" &
+                    MatrixSplit == "Divided" &
+                    SurvivalIssue < 1,
+                  compadre)
+set.seed(83749937)
+pick <- sample(1:nrow(ssdb$metadata), size = 1)
+A_ <- ssdb$mat[[pick]]$matA
+U_ <- ssdb$mat[[pick]]$matU
+F_ <- ssdb$mat[[pick]]$matF
+C_ <- ssdb$mat[[pick]]$matC
+```
+
+OK so now I will write a function that takes two matrices, U and F, as input, and returns the elasticity associated with each as a vector. It will also take a scalar value as a multiplier on F that defaults to 1.
+
+```{r}
+myElasticity <- function(mult = 1, U_, F_, C_){
+  A_ = U_ + mult * F_ + C_
+  E <- try(popbio::elasticity(A_), silent = TRUE)
+  if (class(E) != "try-error"){
+    E_U <- sum(E[U_ > 0])
+    E_F <- sum(E[F_ > 0])
+  } else {
+    E_U <- NA
+    E_F <- NA
+  }
+  return(data.frame(E_U, E_F))
+}
+```
+
+Now I want to map that function onto a vector from 0 to 2 in steps of 0.1, and return a data.frame. Then plot it.
+
+```{r}
+elasticities <- map_df(seq(0.001,2,0.001),myElasticity, U_= U_, F_ = F_, C_ = C_)
+elasticities$multiplier <- seq(0.001,2,0.001)
+ggplot(elasticities, aes(x = multiplier, y = E_F)) + geom_line()
+```
+
+The shape of that plot surprised me a bit. I didn't expect that it would be so flat over such a huge range of perturbations. I expected it to drop towards zero faster as the fertilities shrink towards zero. Unfortunately I lost which matrix did that! So now I use set.seed() up there, but still ... I guess I'd better just do all of them.
+
+Now I want to do all those matrices. I need to write a function that calls my function and that takes as input the list components of mat. It needs to return a data.frame with the matrixID, multipler, and elasticities. 
+
+I ran into ran into a problem with some matrices being singular. I tried trapping those at the start to avoid calculating the sensitivities unsuccessfully thousands of times, but still had issues. So first I'll scan the matrices looking for singular ones and take a further subset. Actually I've had to put the error check into the first function anyway.
+
+```{r, eval=FALSE}
+isSingular <- function(mats){
+  A <- mats$matA
+  ev <- eigen(A)
+  W <- ev$vectors
+ 
+#  V <- try(solve(W), silent = TRUE)
+  V <- try(myElasticity(0.001,mats$matU,mats$matF,mats$matC), silent = TRUE)
+  if (class(V) == "try-error"){
+    V = TRUE
+  } else {
+    V = FALSE
+  }
+  return(V)
+}
+pick <- map_lgl(ssdb$mat,isSingular)
+ssdb <- subsetDB2(pick, ssdb)
+```
+
+
+```{r, cache = TRUE}
+myElasticity2 <- function(mats, mult = seq(0.001, 2, 0.1)){
+  #mats will be a list with 4 matrices
+  ee <- eigen(mats$matA)
+  elasticities <- map_df(mult, myElasticity, U_ = mats$matU, F_ = mats$matF, C_ = mats$matC)
+  elasticities$multiplier <- mult
+  elasticities$lambda <- max(Re(ee$values))
+  return(elasticities)
+}
+mult = seq(0.001, 2, 0.01)
+allElasticities <- map_df(ssdb$mat, myElasticity2, mult=mult)
+allElasticities$matID <- rep(seq_along(ssdb$mat), each = length(mult))
+
+filter(allElasticities, E_F < 1) %>% ggplot(aes(x = multiplier, y = E_F, group = matID)) + geom_line()
+```
+
+Whoa. Originally there were some issues, but the trick is to filter on SurvivalIssue < 1 in the initial step.
+
+Which matrices generate missing values in the elasticity results?
+
+```{r}
+allElasticities %>% group_by(matID) %>%
+  summarize(n_na = sum(is.na(E_F))) %>%
+  count(n_na)
+```
+
+So there are 32 matrices that I couldn't calculate any elasticities for, and 4 that have some idiosyncratic values in there. The ones with a few missing values I think are showing signs of unstable responses to the perturbations on **F**, so I want to remove those.
+
+```{r}
+badE <- allElasticities %>% group_by(matID) %>%
+  summarize(n_na = sum(is.na(E_F)))
+
+pick <- filter(badE, n_na == 0) %>% select(matID)
+allElasticities2 <- filter(allElasticities, matID %in% pick$matID)
+filter(allElasticities2, E_F < 1) %>% ggplot(aes(x = multiplier, y = E_F, group = matID)) + geom_line(alpha = 0.1, )
+
+```
+
+That's better -- I think I've eliminated all the weirdos. There are still a couple of oddballs -- there's one that goes *up* as **F** shrinks towards zero. What does that matrix look like?
+
+```{r}
+maxDelta <- group_by(allElasticities2, matID) %>% filter(multiplier == 1.001 | multiplier == 0.001) %>%
+  select(-E_U) %>%
+  spread(key = multiplier, value = E_F) %>%
+  filter(`1.001` - `0.001` < 0) 
+```
+
+Two of those are basically unresponsive to perturbations, while two show the weirdo pattern. 
+
+```{r}
+pick <- maxDelta[[2]]
+ssdb$mat[[pick[1]]]$matA
+ssdb$mat[[pick[2]]]$matA
+ssdb$mat[[pick[3]]]$matA
+ssdb$mat[[pick[4]]]$matA
+```
+

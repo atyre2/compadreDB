@@ -95,3 +95,27 @@ tbl_df(compadre$metadata) %>% mutate(hasDorm= map_lgl(compadre$matrixClass, dorm
 ```
 
   So that's more interesting! about 10% of herbaceous perennial species have evidence of dormancy. The proportion of species with dormancy is much lower in other groups. 
+
+
+How many species do we have at least 3 individual matrices for?
+
+```{r}
+tbl_df(compadre$metadata) %>% filter(MatrixComposite == "Individual") %>% 
+  group_by(SpeciesAccepted, MatrixPopulation) %>%
+  summarize(GrowthType = first(GrowthType),
+            nMats = n()) %>%
+  count(GrowthType, nMats) %>% 
+  spread(nMats, n, fill = 0)
+
+```
+
+Are the trees size or age structured? 
+
+```{r}
+tbl_df(compadre$metadata) %>% filter(GrowthType == "Tree") %>% 
+  group_by(SpeciesAccepted) %>%
+  count(MatrixCriteriaSize, MatrixCriteriaAge, MatrixCriteriaOntogeny) %>% 
+  spread(nMats, n, fill = 0)
+
+```
+
