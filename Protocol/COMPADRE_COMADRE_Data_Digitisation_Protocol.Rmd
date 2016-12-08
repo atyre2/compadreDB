@@ -110,23 +110,24 @@ First name of COMPADRino
 Possible values
 
 * Alex
+* AlexNH
 * Anne
-* Claudia
 * Christoph
+* Claudia
 * Elisa
 * Erik
 * Fränce
-* Gesa
 * Gabriel
+* Gesa
 * Hendrik
 * Jakob
 * Janek
 * Julia
+* Rob
 * Sandra
 * Stefan
-* Veronika
-* Rob
 * Tara
+* Veronika
 
 Information for Species Descriptors file:
 
@@ -291,11 +292,12 @@ Exactly the same naming convention __must__ be used in both the Species Descript
 
 Records the common name as used in the publication. Separate multiple names with a semi-colon (";"). If there is no common name used in the publication, record "NA".	
 
-************************************************
+
 ************************************************
 ## Taxonomy columns
 
 This series of columns includes taxonomic information.
+Please obtain (and check) this information using The Plant List (http://www.theplantlist.org) for plants and the Catalogue of Life (http://www.catalogueoflife.org/col/) for animals.
 
 * Kingdom - Kingdom to which species belongs.
 * Phylum - Phylum to which species belongs e.g. Magnoliophyta.
@@ -303,12 +305,10 @@ This series of columns includes taxonomic information.
 * Family - Family to which species belongs	e.g. Polygonaceae.
 * Order	- Order to which species belongs	e.g. Caryophyllales.
 * Genus	- Genus used in SpeciesAuthor	e.g. Chorizanthe.
-* SpeciesAccepted - Currently accepted Latin name. This information is is obtained from The Plant List (http://www.theplantlist.org) for plants and the Catalogue of Life (http://www.catalogueoflife.org/col/) for animals.
+* SpeciesAccepted - Currently accepted Latin name. 
 * DateOfCheck - the date when the taxonomy was checked.
 * AngioGymno	Whether species is an angiosperm or a gymnosperm (record Angiosperm or Gymnosperm). If it is neither angiosperm nor gymnosperm fill in NA. Use NA for **all** animals.
 * DicotMonoc - Whether species is a dicot or monocot	(record Eudicot or Monocot). If species is neither dicot nor monocot (i.e. if it is not an angiosperm) fill in NA. Use NA for **all** animals.
-
-Those variables will be digitised and checked frequently by the database curators.
 
 For COMPADRinos to get an idea of what kingdom, class etc means:
 
@@ -677,6 +677,7 @@ Indication of the sex(es) considered when constructing the matrix population mod
 * H	- Hermaphrodites
 * M/F	- Males and females separately in the same population matrix model
 * A	- All sexes together
+* NA	- There are no distinct sexes (e.g. a virus)
 
 ************************************************
 
@@ -818,7 +819,8 @@ __Always__ check geolocation with Google Earth! If the geolocation from Google E
 ### LatDeg / LatMin / LatSec
 
 Record the degree (0-90), minute (0-60) and second (0-60) values of the locations of the matrix.
-If no LatSec is available type in a zero. This means: the value “0” may mean precise values are not available! If the geolocation is given as e.g. 58° 06' N 17° 26' E we do not enter "06" into the LatMin / LatSec column but only "6".
+If no LatSec is available type in a zero. This means: the value “0” may mean precise values are not available! If the geolocation is given as e.g. 58° 06' N 17° 26' E we do not enter "06" into the LatMin / LatSec column but only "6". 
+**Note:** if there are no seconds (or minutes) given, you should record as NA rather than 0.
 
 ### LatNS
 
@@ -842,6 +844,8 @@ Cardinal direction
 * E - East
 
 __Note:__ Cardinal direction might be given with a “+” or “-“ whereat “+” means East and “-“ means West.
+
+The following link is useful for converting between different ways of presenting lat/long information: http://www.earthpoint.us/Convert.aspx
 
 ### Altitude
 
@@ -901,6 +905,14 @@ This is how it possibly looks like (this is a indivisible 5x5 matrices for the h
 The diagram below shows the life cycle of two hypothetical plant populations based on age (A) and size (B), with their corresponding matrix population models. A, and underlying basic demographic processes of survival (U sub-matrix; solid arrows), sexual reproduction (F sub-matrix; dashed arrows) and clonal reproduction (C sub-matrix; dotted arrows). In the Leslie matrix model example (A), the division of sub-matrices is more straightforward than in the Lefkovitch matrix model example (B). In the latter imaginary example, individuals can transition into the same stage as they can contribute with sexual and/or clonal offspring (e.g. small stage). In these cases, splitting A into sub-matrices U, F and C is only feasible when sufficient information is provided by the authors (see variable MatrixSplit in above).
 
 ![Life cycle](images/Lifecycle_AUFC.png)
+************************************************
+## MatrixFec
+
+This records whether fecundity was measured at all for this matrix model. The rationale for this is that a fecundity (in the F matrix) may be recorded as 0 either because it was not measured, or because reproduction was estimated to be zero. As a general rule, if any values for fecundity (e.g. in the F matrix) are non-zero, then MatrixFec should be recorded as 'Yes'. If all values are zero, then you should check the paper carefully to check whther this is because no fecundity was detected, or whether no attempt was made to measure fecundity.
+
+* Yes - fecundity was measured for the matrix
+* No - fecundity was not measured for the matrix
+* NA - it is not known whether fecundity was measured for the matrix
 
 
 ************************************************
